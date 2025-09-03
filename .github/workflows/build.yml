@@ -1,0 +1,46 @@
+name: Build & Deploy Speed Reader
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch: {}
+  schedule:
+    - cron: "*/30 * * * *" # every 30 minutes
+
+permissions:
+  contents: write
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install deps
+        run: npm ci || npm i
+
+      - name: Build static site
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          MODEL: gpt-4o-mini
+          RSS_URL: https://www.boston.com/feed/bdc-msn-rss
+          MAX_ITEMS: 12
+          SUMMARY_PROMPT: >-
+            Summarize the article below into 3–4 short, factual bullets. Each bullet ≤ 18 words.
+            Avoid hype and repetition. Focus on Boston relevance when applicable. No headings, no links.
+          SITE_TITLE: Boston.com Speed Reader
+          SITE_TAGLINE: Rapid 3–4 bullet summaries with links to the originals.
+        run: npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          publish_branch: gh-pages
