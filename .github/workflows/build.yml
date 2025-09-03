@@ -33,7 +33,7 @@ jobs:
           MAX_ITEMS: 12
           SUMMARY_PROMPT: >-
             Summarize the article below into 3–4 short, factual bullets. Each bullet ≤ 18 words.
-            Avoid hype and repetition. Focus on Boston relevance when applicable. No headings, no links.
+            Avoid hype and repetition. Focus on Boston relevance when applicable. No headings, no links. The last bullet should have a curosity gap that will motivate the reader to read the story
           SITE_TITLE: Boston.com Speed Reader
           SITE_TAGLINE: Rapid 3–4 bullet summaries with links to the originals.
         run: npm run build
